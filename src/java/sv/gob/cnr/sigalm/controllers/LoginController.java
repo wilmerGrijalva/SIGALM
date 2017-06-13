@@ -56,15 +56,12 @@ public class LoginController implements Serializable{
         m = new Mensaje();
         String respuesta = null;
         try {
-            System.out.println("Controler us: "+this.usuario.getUsrUsuario());
-            System.out.println("Controler us: "+this.usuario.getUsrContrasenia());
             Usuario u = usuarioFacadeLocal.login(this.usuario);
-            System.out.println("Controler");
             if (u != null) {
                 this.session=true;
                 this.usuario.setUsrNombre(u.getUsrNombre());
                 this.usuario.setUsrApellido(u.getUsrApellido());
-                respuesta = "principal?faces-redirect=true";
+                respuesta = "principal?faces-redirect=true"; // Navegación explicita
             }
             else{
                 m.warn("Datos incorrectos");

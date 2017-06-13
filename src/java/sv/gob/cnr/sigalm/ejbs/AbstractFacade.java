@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 /**
  *
  * @author javii
+ * Una clase abstracta de tipo generico
  */
 public abstract class AbstractFacade<T> {
     private Class<T> entityClass;
