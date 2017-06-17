@@ -5,10 +5,12 @@
  */
 package sv.gob.cnr.sigalm.ejbs;
 
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import sv.gob.cnr.sigalm.entities.Menu;
+import sv.gob.cnr.sigalm.entities.Rol;
 
 /**
  *
@@ -26,6 +28,16 @@ public class MenuFacade extends AbstractFacade<Menu> implements MenuFacadeLocal 
 
     public MenuFacade() {
         super(Menu.class);
+    }
+
+    @Override
+    public List<Menu> listAllMenus(Rol rol) {
+        List<Menu> listMenus = null;
+        try {
+            listMenus = em.createNamedQuery("Menu.findByPermisos").getResultList();
+        } catch (Exception e) {
+        }
+        return listMenus;
     }
     
 }
