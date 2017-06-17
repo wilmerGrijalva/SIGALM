@@ -10,9 +10,12 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import sv.gob.cnr.sigalm.ejbs.UsuarioFacadeLocal;
 import sv.gob.cnr.sigalm.entities.Usuario;
 import sv.gob.cnr.sigalm.util.Mensaje;
+import sv.gob.cnr.sigalm.util.Util;
 
 /**
  *
@@ -29,7 +32,7 @@ public class LoginController implements Serializable{
     private UsuarioFacadeLocal usuarioFacadeLocal;
     private Usuario usuario;
     private Mensaje m;
-    private Boolean session=false;
+    private boolean session;
     
     @PostConstruct
     public void init(){
@@ -58,7 +61,13 @@ public class LoginController implements Serializable{
         try {
             Usuario u = usuarioFacadeLocal.login(this.usuario);
             if (u != null) {
-                this.session=true;
+                session=Boolean.TRUE;
+                
+                HttpSession httpSession = Util.getSession();
+                HttpServletRequest request = Util.getRequest();
+                
+                httpSession.setAttribute("usuario", u);
+                
                 this.usuario.setUsrNombre(u.getUsrNombre());
                 this.usuario.setUsrApellido(u.getUsrApellido());
                 respuesta = "principal?faces-redirect=true"; // Navegación explicita
