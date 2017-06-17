@@ -5,11 +5,15 @@
  */
 package sv.gob.cnr.sigalm.controllers;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import sv.gob.cnr.sigalm.ejbs.UsuarioFacadeLocal;
@@ -21,21 +25,20 @@ import sv.gob.cnr.sigalm.util.Util;
  *
  * @author javii
  */
-
 @ManagedBean
 @SessionScoped
-public class LoginController implements Serializable{
-    
+public class LoginController implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @EJB
     private UsuarioFacadeLocal usuarioFacadeLocal;
     private Usuario usuario;
     private Mensaje m;
     private boolean session;
-    
+
     @PostConstruct
-    public void init(){
+    public void init() {
         usuario = new Usuario();
     }
 
@@ -54,25 +57,24 @@ public class LoginController implements Serializable{
     public void setSession(Boolean session) {
         this.session = session;
     }
-    
-    public String inciarSesion(){
+
+    public String inciarSesion() {
         m = new Mensaje();
         String respuesta = null;
         try {
             Usuario u = usuarioFacadeLocal.login(this.usuario);
             if (u != null) {
-                session=Boolean.TRUE;
-                
+                session = Boolean.TRUE;
+
                 HttpSession httpSession = Util.getSession();
                 HttpServletRequest request = Util.getRequest();
-                
+
                 httpSession.setAttribute("usuario", u);
-                
+
                 this.usuario.setUsrNombre(u.getUsrNombre());
                 this.usuario.setUsrApellido(u.getUsrApellido());
                 respuesta = "principal?faces-redirect=true"; // Navegación explicita
-            }
-            else{
+            } else {
                 m.warn("Datos incorrectos");
             }
         } catch (Exception e) {
@@ -80,8 +82,18 @@ public class LoginController implements Serializable{
         }
         return respuesta;
     }
-    
-    public void verificarSession(){
-        session=true;
+
+    public String cerrarSesion() {
+        String respuesta = null;
+        try {
+            session = Boolean.FALSE;
+            this.usuario = null;
+            respuesta = "index?faces-redirect=true"; // Navegación explicita
+            // Invalido la sesión actual
+            FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+        } catch (Exception e) {
+            Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return respuesta;
     }
 }
